@@ -113,6 +113,7 @@ parser.addArgument([ '-c', '--config' ], { help: 'Font config file', required: t
 parser.addArgument([ '-i', '--input_dir' ], { help: 'Source images path', required: true });
 parser.addArgument([ '-o', '--output' ], { help: 'Output font file path', required: true });
 parser.addArgument([ '-s', '--svgo_config' ], { help: 'SVGO config path (use default if not set)' });
+parser.addArgument([ '-sp', '--svgo_path' ], { help: 'SVGO bin path (use ./node_modules/.bin/svgo if not set)' });
 
 var args = parser.parseArgs();
 
@@ -167,10 +168,11 @@ fstools.walkSync(args.input_dir, /[.]svg$/i, function (file) {
 
 console.log('Optimizing images');
 
+var svgoPath = args.svgo_path ? path.resolve(args.svgo_path) : path.resolve(process.cwd(), './node_modules/.bin/svgo');
 var svgoConfig = args.svgo_config ? path.resolve(args.svgo_config) : path.resolve(__dirname, 'svgo.yml');
 
 execFile(
-  path.resolve(process.cwd(), './node_modules/.bin/svgo'),
+  svgoPath,
   [ '-f', tmpDir, '--config', svgoConfig ],
   function (err) {
 
